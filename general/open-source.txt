@@ -1,0 +1,31 @@
+Intro
+-----
+
+Almost all email servers features 2 agents:
+1) Mail Delivery Agent (MDA)
+2) Mail Transfer Agent (MTA)
+
+MDA is used to route emails to/from its destination.
+MTA is used to transfer email between servers using client-server architecture. 
+
+Example of MDA are:
+1) Dovecot
+2) Qpopper
+3) Courier
+4) Cyrus IMAP/ POP3
+
+Example of MTA are:
+1) Exim
+2) Qmail
+3) Sendmail
+4) OpenSMTPD
+5) Postfix
+
+List of open source mail server software to create a mail server for an enterprise:
+1) Kolad Groupware
+2) Zimbra - Email and Collaboration Suite
+3) iRedMail
+4) Modoboa - Mail hosting and management platform
+5) Java Apache Mail Enterprise Server. 
+
+
