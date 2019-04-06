@@ -160,4 +160,183 @@ Different buffers are provided to hold the type of data objects.
 There is a reverse-path buffer, a forward-path buffer and a data buffer. 
 Specific commands cause information to be appended to a specific buffer, or cause or more more buffers to be cleared. 
 
+EHLO commands are used to identify the smtp client to the smtp server. 
+The argument contains FQDN.
+
+MAIL command clears the reverse-path buffer, the forward-path buffer, and the mail data buffer. 
+It than inserts the reverse-path buffer. 
+
+RCPT command is used to identity an individual recipient. 
+Multiple recipients are specified by multiple use of the command.
+The argument clause contains forward-path and may contain optional parameters. 
+
+RSET command specified that current mail transaction be aborted. 
+Any stored data must be discarded and all buffers and state tables cleared. 
+The receiver must send 250 OK reply to the RSET command. 
+Smtp server must not close the connection as a result of a RSET; that action is reserved for QUIT.
+
+EXPN command asks the receiver to confirm that the argument identifies a mailing list. 
+IF the command is successful, a reply is returned. 
+This reply will have multiple lines except in the trival case of one member list. 
+EXPN has no effect on the reverse-path buffer, the forward-path buffer or mail-data buffer. 
+
+HELP command causes the server to send helpful information to the client. 
+The command may take an argument and return more specific information as a response. 
+HELP has no effect on the reverse-path, the forward-path and the mail-data buffer. 
+Smtp server should support HELP without argument and may support it with arguments. 
+
+NOOP command does not affect any parameters or previously entered commands. 
+If specifies no action other than the receive send "250 OK" reply. 
+NOOP has no effect on any buffers. 
+
+QUIT command specified that the receiver must send a 221 OK reply, and then close the connection.
+The QUIT command may be issued at any time. 
+Any current uncompleted mail transaction will be aborted. 
+
+
+Order of commands
+-----------------
+There are restriction on the order in which these commands may be used. 
+A session that will contain mail transaction must first start with EHLO.
+Smtp servers will, however, accept VRFY or EXPN without initiation. 
+NOOP, HELP, EXPN, VRFY, and RSET commands can be used at any time during a session. 
+
+
+MAIL command begins a mail transaction. 
+Once started, a mail transaction consists of:
+1) A transaction begining command (EHLO)
+2) One of more RCPT command [ for each recipient ]
+3) And a DATA command with message body
+
+
+SMTP replies
+------------
+
+Replies to smtp commands server to ensure synchronization of requests. 
+It ensures that smtp client always knows the state of the smtp server. 
+Every command must generate exactly one reply. 
+
+Smtp reply consists of a 3 digit number followed by some text. 
+Number is used for programs, text for human users. 
+3 digits contains enough encoded information that smtp client does not need to parse the text. 
+Reply code 220, 221, 251, 421 and 551 are associated with message text that must be parsed by the machines.
+There are likely to be varying text for each reply codes. 
+
+The text, in voilation of this specification, is sometimes not sent. 
+Clients that do not receive this, should be prepared to process code alone. 
+Only EHLO, EXPN and HELP is expected to result in multi-line replies. 
+
+Unless overriden by one of the extensions; smtp server must not send reply codes whose 1st digit is NOT 2,3,4 or 5. 
+Clients that receive such out of range code should normally treat them as fatal errors and terminate the transaction. 
+
+The 3 digits each have special significance. 
+1st denotes whether the response is good, bad or incomplete. 
+Smtp client will be able to determine its next action by examining the 1st digit. 
+Smtp client that want to know approximately what kind of error occured may examine the second digit. 
+4rd digit provide any supplementary information that may be present.
+
+2XX => Positive Completion Reply
+--------------------------------
+The requested action has been successfully completed. 
+A new request may be initiated
+
+3XX => Positive intermediate reply
+-----------------------------------
+The command has been accepted. 
+The request action, however, is being held pending receipt of further information. 
+
+4XX => Transient Negative Completion
+-------------------------------------
+The command was not accepted. 
+The requested action did not occur. 
+The error condition, however, is temporary and the action may be requested again. 
+The sender should return to the beginning of the command sequence if any. 
+
+5XX => Permanent Negative Completion
+-------------------------------------
+The command was not accepted and the requested action did not occurs. 
+SMTP client should not repeat the exact same request. 
+
+The second encodes responses in specific catagories:
+X0X => Syntax Error 
+X1X => Information => These are replies to requests for information, such as status or help. 
+X2X => Connections => These are replies referring to the transmission channel. 
+
+X3X => Unspecified 
+X4X => Unspecified
+ 
+X5X => Mail System => These replies indicate the status of the receiver mail system vis-a-vis the requested transfer.
+
+
+A typical smtp Transaction Scenario
+-------------------------------------
+
+The smtp example shows mail sent by Smith at bar.com to Jones, Green and Brown at foo.com. 
+Here we assume that bar.com contacts foo.com directly. 
+The mail is accepted for Jones and Brown. 
+Green does not have a mailbox at the host. 
+
+S => 200 foo.com Simple MAil Transfer Service Read
+
+C => EHLO bar.com
+
+S => 250 foo.com greets bar.com
+S => 250 8BITMIME
+S => 250 SIZE
+S => 250 DSN
+S => 250 HELP
+
+C => MAIL FROM:<smith@bar.com>
+
+S => 250 OK
+
+C => RCPT TO:<jones@foo.com> 
+
+S => 250 OK
+
+C => RCPT TO:<green@foo.com>
+
+S => 550 No such user here
+
+C => RCPT TO:<brown@foo.com>
+
+S => 250 OK
+
+C => DATA
+
+S => 354 Start mail input, end with <CRLF>.<CRLF>
+
+C => Blah.. Blah .. Blah
+C => Jones and Brown can fuck off
+C => Green does not even have a mailbox what a looser!! 
+C => <CRLF>.<CRLF>
+
+S => 200 OK
+
+C => QUIT
+
+S => 221 foo.com Closing tramission channel. 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 
