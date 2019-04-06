@@ -61,4 +61,103 @@ A relay system receives mail from a client and transmits it to another server.
 A gateway system receives mail from a client system in one transport environment and transmits it to a server system in another environment. 
 Firewalls that rewrite addresses should be considered as gateways even if smtp is used on both sides of them.
 
-  
+General Syntax
+---------------
+
+Smtp commands and replies have a rigit syntax. 
+All commands begin with a command verb. 
+All replies begin with a 3 digit numeric code. 
+Verbs and argument values are not case sensitive. 
+
+Smtp Procedure: an overview
+----------------------------
+
+Smtp session is initiated when a client opens a connection to a server and the server responds with an opening message. 
+Server responds with a greeting. 
+Client then, normally, sends EHLO command indicating the clients identity.
+In additional to opening the session, EHLO indicates that client supports service extensions. 
+
+Mail Transaction
+-----------------
+There are 3 steps to SMTP mail transactions:
+1) MAIL command
+2) RCPT command
+3) DATA command
+
+The transaction starts with the MAIL command that gives the sender identification. 
+A series of one or more RCPT command follows giving the receiver information.
+DATA command is used to initiate transfer of mail data. 
+DATA is terminated by "end of mail" terminator which also confirms the transaction.
+
+
+The first step in the procedure is the MAIL command:
+
+	MAIL FROM:<reverse-path> <mail-parameters> <CRLF>
+
+This command tells the SMTP server that a new mail transaction is starting and to reset all its state tables and buffers. 
+<reverse-path> contains the source mailbox which is used to report errors. 
+
+If accepted smtp server returns a "250 OK" reply. 
+
+The optional <mail-parameters> are associated with negotiated smtp service extensions. 
+
+------------
+
+The second step in the procedure is RCPT command. 
+This step can be repeated any number of times. 
+
+	RCPT TO:<forward-path> <rcpt-parameters> <CRLF>
+
+<forward-path> is normally a mailbox and a domain identifying one recipient. 
+If accepted the SMTP server returns a 250 OK reply and stores the forward path.
+The optional <rcpt-parameters> are associated with negotiated smtp service extension 
+
+-------------
+
+
+The third step is the DATA command:
+
+	DATA <CRLF>
+
+If accepted, smtp server returns a 354 intermediate replay and consider everything to be message text. 
+When end of the text is successfully received and stored, server sends 250 OK reply. 
+
+
+Forwarding
+----------
+
+Forwarding support is most often used by enterprises to link a person's prior address to current one. 
+Silent forwarding of message, with any notification to end user, is commonplace. 
+
+
+Debugging Addresses
+--------------------------------
+Smtp provides commands to verify usernames or obtain the content of a mailing list. 
+This is done with the VRFY and EXPN commands. 
+
+
+VRFY takes username and/or domain as an argument.
+If smtp server responds with a 250 OK, the server must include the mailbox of the user and optionally the fullname. 
+If the name identify more than 1 mailbox, the server may either note the ambiguity or identify the alternatives. 
+
+
+EXPN command contains a mailing list. 
+If smtp servers sends 250 OK, it is required to send the full name of users and their mailboxes relating to the mailing list. 
+
+
+SMTP Commands
+-------------
+
+Smtp commands are character strings terminated by <CRLF>
+
+A mail transaction involves several data objects that are communicated as arguments to different commands. 
+The <reverse-path> is the argument of the mail command. 
+The <forward-path> is the argument of the RCPT command. 
+The mail data is the argument of the DATA command. 
+
+These data objects must be transmitted and held. 
+Different buffers are provided to hold the type of data objects. 
+There is a reverse-path buffer, a forward-path buffer and a data buffer. 
+Specific commands cause information to be appended to a specific buffer, or cause or more more buffers to be cleared. 
+
+
