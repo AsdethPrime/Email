@@ -1,0 +1,65 @@
+
+Intro
+-----
+
+Email systems consits of computer servers that process and store message on behalf of the user. 
+Users connect to email infrastructure to send and receive email. 
+When someone sends an email, the message is transferred from their computer to the server associate with the domain. 
+The message can pass through a number of intermeditary servers along the way. 
+
+
+Scenario
+--------
+
+=> A user (Alice) sends an email message and connects to a smtp server as configured in her Mail User Agent (MUA)
+=> On the server a Mail Transfer Agent (MTA) looks at the recipient address and look up the domian part of the address to determine the destination.
+=> After querying a DNS server for the Mail eXchanger(MX) for the recipient's domain name, the server sends the message using SMTP protocol. 
+=> The receiving server will store the message and make it available to recipient who can access via web, POP, or IMAP
+
+
+Email Server
+------------
+
+Email servers are responsible for receiving, storing, forwarding and delivering messages. 
+Messages are exchanged between servers using smtp protocol among various Mail Transfer Agent (MTA).
+
+There are 3 main type of email servers:
+1) SMTP Server 
+2) POP Server
+3) IMAP Server
+
+SMTP Server can refer to either a physical server or an application server. 
+These are called MTA (Mail Transfer Agent).
+MTA receives and delivers mail to and from other email servers and users. 
+
+POP Server is a peice a software that gives an email user access to email stored in the server. 
+The user can download the message using MUA (Mail User Agent). 
+
+IMAP like like POP but providers full access to all the folders the user has created on the server. 
+The user can synchronize all the folders and messages on all the server with the data stored locally using a MUA with IMAP capabilities. 
+
+
+Email Client (MUA) 
+-------------------
+
+A user can access email messages stored on an email server using an email client. 
+Email client connects to email server via POP to download messages from a folder. 
+More advance IMAP protocol can be used to synchronize all messages in the folders that exist on the server. 
+When the user sends a message, the client connects to the server. 
+
+
+Webmail
+-------
+
+A webmail is a web based email service that is accessible in a web browser. 
+Most email services offer web interfaces to email store on the server. 
+
+
+Content
+-------
+
+In early days email only contained plain text ASCII format. 
+Email these days has evolved to support HTML and other types of content. 
+Today, email messages are usually MIME (Multipurpose Internet Mail Extension) encoded. 
+This allows email to support text in various character sets, attached files, and miltimedia content etc. 
+
