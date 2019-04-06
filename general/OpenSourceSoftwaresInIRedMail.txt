@@ -1,0 +1,77 @@
+Postfix => Mail Tranfer Agent
+
+Dovecot => POP3, IMAP and Managesieve server
+
+Apache, Nginx => Web Server
+
+OpenLDAP, ldapd => LDAP server used for storing mail accounts
+
+MySQL, MariaDB, PostgresSQL => SQL server used to store app data. 
+
+mimmj => Mailing list manager
+
+Amavisd-new => Interface between Postfix, SpamAssasin and ClamAV
+
+SpamAssassin => Content based spam scanner 
+
+ClamAV => AntiVirus
+
+Roundcube => Webmail (PHP)
+
+SOGO Groupware => A groupware which provides calandars (CalDAV), contacts (CardDAV), tasks and activesync services. 
+
+Fail2ban => Scans log file and bans IP that show malicious signs
+
+Awstats => Apache and Postfix log analyzer 
+
+iRedAPD => A postfix policy server developed by iRedMail team. 
+
+
+The big picture
+=================
+
+Step 0
+------
+Incoming email arrives on SMTP TCP Port 25. 
+
+Step 1
+-------
+Postfix server accepts the email. 
+It then performs its basic checks which includes, but are not limited to:
+=> blacklist check 
+=> user authentication check 
+=> relay check 
+=> grey listing
+=> SPF Check
+
+Step 2
+-------
+Once Postfix is satisified with basic check it then passes the mail to Amavisd for scanning. 
+Postfix makes a TCP connection on port 10024 and hands off the mail to Amavisd. 
+
+Step 3
+------
+Amavisd first accepts the message. It then runs this through SpamAssasin for spam filtering. 
+
+Step 4
+--------
+Once SpamAssasin has done it's thing, the message is returned back to Amavisd. 
+Amavisd then run the message through ClamAv. 
+
+Step 5
+-------
+After ClamAV is satified it returns the message back to Amavisd. 
+Amavisd has completed it's just and it hands the message back to postfix server on TCP port 10025. 
+
+Step 6
+-------
+Postfix then create a socket connection with Dovecot server and passes the mail. 
+
+Step 7
+-------
+The Dovecot server than stores the mail on the maildir database. 
+
+Step 8
+-------
+User fetch mail using POP3 or IMAP
+
